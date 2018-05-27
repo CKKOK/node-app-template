@@ -18,10 +18,28 @@ const UserSchema = new Schema({
     password: {
         type: String,
         required: [true, 'Password required']
+    },
+    verified: {
+        type: Boolean,
+        required: true,
+        default: false
     }
-})
+});
+
+const UserVerificationSchema = new Schema({
+    verificationString: {
+        type: String,
+        trim: true,
+        required: true
+    },
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
+    }
+});
 
 const User = mongoose.model('users', UserSchema);
+const Verify = mongoose.model('verification', UserVerificationSchema);
 
 // Passport JWT Authentication
 // =============================

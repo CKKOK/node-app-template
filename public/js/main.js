@@ -1,3 +1,14 @@
+function setStyle(element, styles) {
+    Object.assign(element.style, styles);
+};
+
+function setStyleAll(selector, styles) {
+    var elements = document.querySelectorAll(selector);
+    for (var i = 0; i < elements.length; i++) {
+        Object.assign(elements[i].style, styles);
+    };
+};
+
 function sendData(opts) {
     var xhr = new XMLHttpRequest();
 
@@ -22,12 +33,14 @@ function handleSubmit(event) {
             if (this.responseText === 'Unauthorized') {
                 console.log('Failed to login');
             } else {
-                console.log(JSON.parse(this.responseText))
+                var result = JSON.parse(this.responseText);
+                if (result.message === 'logged in') {
+                    window.location.href = "http://localhost:3000";
+                }
             };
         },
         onError: function(evt){console.log(evt)},
-        // header: ['Content-Type', 'multipart/form-data; boundary=--loginFormBoundary'],
         withCredentials: true,
         token: document.querySelector('input[name="_csrf"]').value,
     });
-}
+};

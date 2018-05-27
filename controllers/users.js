@@ -2,12 +2,30 @@ const config = require('../config');
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
+const auth = require('../lib/auth')(User);
 const passport = User.passport;
 const asyncf = require('../async');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const multer = require('multer');
 const upload = multer();
+
+const mailer = require('../lib/mail');
+
+// let mailOptions = {
+//     from: '"CK Dev Studios" <ckdevmnt@gmail.com>',
+//     to: 'kok.chee.kean@outlook.com',
+//     subject: 'Test Email',
+//     text: 'Plain text body',
+//     html: '<b>NodeJS Email Test</b>'
+// };
+
+// mailer.sendMail(mailOptions, (err, info) => {
+//     if (err) {
+//         return console.log(err);
+//     };
+//     console.log(info);
+// })
 
 function requireLogin(req, res, next) {
     // Express Session Authentication
@@ -33,7 +51,10 @@ function requireLogin(req, res, next) {
 };
 
 router.get('/', requireLogin, (req, res) => {
-    res.render('users/users', {title: 'User registration'});
+    res.render('users/users', {
+        title: 'User registration',
+        websocketsEnabled: req.app.locals.websocketsEnabled
+    });
 });
 
 router.post('/', async (req, res) => {
@@ -50,7 +71,11 @@ router.post('/', async (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-    res.render('users/login', {title: 'User login', csrfToken: req.csrfToken()});
+    res.render('users/login', {
+        title: 'User login',
+        csrfToken: req.csrfToken(),
+        websocketsEnabled: req.app.locals.websocketsEnabled
+    });
 });
 
 // Passport Login (Form Submission)

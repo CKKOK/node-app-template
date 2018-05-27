@@ -12,7 +12,8 @@ const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
 
 // JWT Authentication
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
+
 
 // Express Session Authentication
 const session = require('express-session');
@@ -21,16 +22,12 @@ const redisStore = require('connect-redis')(session);
 const logger = require('morgan');
 const path = require('path');
 const server = express();
-const forceSSL = require('express-force-ssl');
 
 const csrf = require('csurf');
 const csrfProtection = csrf({cookie: true});
 
 // Enable request logging
 server.use(logger('dev'));
-
-// Force the use of https
-// server.use(forceSSL);
 
 // Enables overriding of http verbs for supporting PUT/PATCH and DELETE requests from older clients
 server.use(methodOverride('_method'));
@@ -60,9 +57,11 @@ server.use(session({
     })
 }));
 
-const passport = require('./models/user').passport;
-server.use(passport.initialize());
-server.use(passport.session());
+// const passport = require('./models/user').passport;
+// server.use(passport.initialize());
+// server.use(passport.session());
+const User = require('./models/user');
+const auth = require('./lib/auth')(User, server);
 
 // Cross Site Resource Forgery Protection
 server.use(csrfProtection);
@@ -134,17 +133,16 @@ server.use(express.static(path.join(__dirname, 'public')));
 //     }
 // })
 
-// Passport: Check if this session contains an authenticated user
-// ==============================================================
-server.use((req, res, next) => {
-    next();
-})
+
+// WebSockets Configuration: Pass the status on to the application level to cascade down to the response level
+// ===========================================================================================================
+server.locals.websocketsEnabled = config.websocketsEnabled;
 
 // Routers
-const rootRouter = require('./controllers/root');
+const root = require('./controllers/root');
 const users = require('./controllers/users');
 
-server.use('/', rootRouter);
+server.use('/', root);
 server.use('/users', users);
 
 module.exports = server;

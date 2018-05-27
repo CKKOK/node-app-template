@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', (req, res) => {
-    let context = {};
+    let context = {websocketsEnabled: req.app.locals.websocketsEnabled};
     if (req.session.authenticated === true || req.user) {
         context.defaultMessage = 'hello, you\'re logged in';
     } else {

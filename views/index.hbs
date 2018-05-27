@@ -1,3 +1,12 @@
 <div class="container">
     {{defaultMessage}}
 </div>
+{{#if websocketsEnabled}}
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    var socket = io();
+    socket.on('connect', function(data){
+        socket.emit('join', 'Hello');
+    })
+    </script>
+{{/if}}
