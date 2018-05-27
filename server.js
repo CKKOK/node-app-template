@@ -1,4 +1,5 @@
 const config = require('./config');
+
 const redis = require('redis');
 const redisClient = redis.createClient();
 const express = require('express');
@@ -6,15 +7,22 @@ const express = require('express');
 // const viewEngine = require('ejs-locals');
 const viewEngine = require('express-handlebars');
 
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const methodOverride = require('method-override');
+
+// JWT Authentication
+const jwt = require('jsonwebtoken');
+
+// Express Session Authentication
 const session = require('express-session');
 const redisStore = require('connect-redis')(session);
+
 const logger = require('morgan');
 const path = require('path');
 const server = express();
 const forceSSL = require('express-force-ssl');
+
 const csrf = require('csurf');
 const csrfProtection = csrf({cookie: true});
 
@@ -27,10 +35,12 @@ server.use(logger('dev'));
 // Enables overriding of http verbs for supporting PUT/PATCH and DELETE requests from older clients
 server.use(methodOverride('_method'));
 
-server.use(bodyParser.json());
-server.use(bodyParser.urlencoded({
-    extended: true
-}));
+// server.use(bodyParser.json());
+// server.use(bodyParser.urlencoded({
+//     extended: true
+// }));
+server.use(express.json());
+server.use(express.urlencoded({extended: true}));
 server.use(cookieParser());
 
 // Set up express-session
@@ -50,6 +60,10 @@ server.use(session({
     })
 }));
 
+const passport = require('./models/user').passport;
+server.use(passport.initialize());
+server.use(passport.session());
+
 // Cross Site Resource Forgery Protection
 server.use(csrfProtection);
 
@@ -61,25 +75,70 @@ server.set('views', path.join(__dirname, 'views'));
 // server.set('view engine', 'ejs');
 
 // Use Handlebars
-server.engine('handlebars', viewEngine.create({
-    defaultLayout: 'default'
+server.engine('hbs', viewEngine.create({
+    extname: '.hbs',
+    defaultLayout: 'default',
+    partialsDir: path.join(__dirname, 'views', 'partials'),
+    layoutsDir: path.join(__dirname, 'views', 'layouts'),
 }).engine);
-server.set('view engine', 'handlebars');
+server.set('view engine', 'hbs');
 
 // Configure path to static assets
 server.use(express.static(path.join(__dirname, 'public')));
 
-// Check if this session contains an authenticated user
+// Express Session Authentication: Check if this session contains an authenticated user
+// ====================================================================================
+// server.use((req, res, next) => {
+//     if (req.cookies.user_sid) {
+//         if (req.session.user) {
+//             req.session.authenticated = true;
+//         } else {
+//             res.clearCookie('user_sid');
+//         };
+//     };
+//     next();
+// });
+
+// JWT Authentication with Express Session: Check if this session contains a JWT
+// =============================================================================
+// server.use((req, res, next) => {
+//     if (req.session.token) {
+//         jwt.verify(req.session.token, config.jwtSecret, (err, decodedToken) => {
+//             if (err) {
+//                 req.user = undefined;
+//             } else {
+//                 req.user = decodedToken;
+//             };
+//             next();
+//         });
+//     } else {
+//         req.user = undefined;
+//         next();
+//     }
+// })
+
+// JWT Authentication with Cookies: Check if the cookies contains a JWT
+// server.use((req, res, next) => {
+//     if (req.cookies.token) {
+//         jwt.verify(req.cookies.token, config.jwtSecret, (err, decodedToken) => {
+//             if (err) {
+//                 req.user = undefined;
+//             } else {
+//                 req.user = decodedToken;
+//             };
+//             next();
+//         });
+//     } else {
+//         // req.user = undefined;
+//         next();
+//     }
+// })
+
+// Passport: Check if this session contains an authenticated user
+// ==============================================================
 server.use((req, res, next) => {
-    if (req.cookies.user_sid) {
-        if (req.session.user) {
-            req.session.authenticated = true;
-        } else {
-            res.clearCookie('user_sid');
-        };
-    };
     next();
-});
+})
 
 // Routers
 const rootRouter = require('./controllers/root');
