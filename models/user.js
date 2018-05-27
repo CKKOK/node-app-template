@@ -53,6 +53,9 @@ const localOptions = {
 };
 const localStrategy = new LocalStrategy(localOptions, async function(email, password, done) {
     let [err1, user] = await asyncf(User.findOne({email: email}).lean());
+    if (user === null) {
+        return done(null, false, {message: 'User not found'});
+    };
     let [err2, result] = await asyncf(bcrypt.compare(password, user.password));
     if (err1) {
         return done(err1);
