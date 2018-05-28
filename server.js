@@ -61,7 +61,7 @@ server.use(session({
 // server.use(passport.initialize());
 // server.use(passport.session());
 const User = require('./models/user');
-const auth = require('./lib/auth')(User, server);
+const auth = require('./lib/auth')(User);
 
 // Cross Site Resource Forgery Protection
 server.use(csrfProtection);
@@ -85,58 +85,13 @@ server.set('view engine', 'hbs');
 // Configure path to static assets
 server.use(express.static(path.join(__dirname, 'public')));
 
-// Express Session Authentication: Check if this session contains an authenticated user
-// ====================================================================================
-// server.use((req, res, next) => {
-//     if (req.cookies.user_sid) {
-//         if (req.session.user) {
-//             req.session.authenticated = true;
-//         } else {
-//             res.clearCookie('user_sid');
-//         };
-//     };
-//     next();
-// });
+if (config.authMethod === 'passport-jwt' || config.authMethod === 'passport') {
+    server.use(auth.passport.initialize());
+    server.use(auth.passport.session());
+}
 
-// JWT Authentication with Express Session: Check if this session contains a JWT
-// =============================================================================
-// server.use((req, res, next) => {
-//     if (req.session.token) {
-//         jwt.verify(req.session.token, config.jwtSecret, (err, decodedToken) => {
-//             if (err) {
-//                 req.user = undefined;
-//             } else {
-//                 req.user = decodedToken;
-//             };
-//             next();
-//         });
-//     } else {
-//         req.user = undefined;
-//         next();
-//     }
-// })
+server.use(auth.sessionCheck);
 
-// JWT Authentication with Cookies: Check if the cookies contains a JWT
-// server.use((req, res, next) => {
-//     if (req.cookies.token) {
-//         jwt.verify(req.cookies.token, config.jwtSecret, (err, decodedToken) => {
-//             if (err) {
-//                 req.user = undefined;
-//             } else {
-//                 req.user = decodedToken;
-//             };
-//             next();
-//         });
-//     } else {
-//         // req.user = undefined;
-//         next();
-//     }
-// })
-
-server.use((req, res, next) => {
-    console.log(req.headers);
-    next();
-})
 // WebSockets Configuration: Pass the status on to the application level to cascade down to the response level
 // ===========================================================================================================
 server.locals.websocketsEnabled = config.websocketsEnabled;
@@ -144,8 +99,10 @@ server.locals.websocketsEnabled = config.websocketsEnabled;
 // Routers
 const root = require('./controllers/root');
 const users = require('./controllers/users');
+const api = require('./api/v1/api');
 
 server.use('/', root);
 server.use('/users', users);
+server.use('/api/v1', api);
 
 module.exports = server;

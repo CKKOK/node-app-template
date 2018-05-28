@@ -3,7 +3,7 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
     let context = {websocketsEnabled: req.app.locals.websocketsEnabled};
-    if (req.session.authenticated === true || req.user) {
+    if (req.session.user || req.user || (req.isAuthenticated && req.isAuthenticated())) {
         context.defaultMessage = 'hello, you\'re logged in';
     } else {
         context.defaultMessage = 'hello, you\'re NOT logged in';

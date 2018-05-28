@@ -1,3 +1,5 @@
+let token = null;
+
 function setStyle(element, styles) {
     Object.assign(element.style, styles);
 };
@@ -30,6 +32,7 @@ function handleSubmit(event) {
         data: data,
         method: 'POST',
         onLoad: function(evt){
+            console.log(this.responseText);
             if (this.responseText === 'Unauthorized') {
                 console.log('Failed to login');
             } else {
