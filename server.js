@@ -133,7 +133,10 @@ server.use(express.static(path.join(__dirname, 'public')));
 //     }
 // })
 
-
+server.use((req, res, next) => {
+    console.log(req.headers);
+    next();
+})
 // WebSockets Configuration: Pass the status on to the application level to cascade down to the response level
 // ===========================================================================================================
 server.locals.websocketsEnabled = config.websocketsEnabled;
