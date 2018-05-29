@@ -1,46 +1,43 @@
 const config = require('./config');
-
-const redis = require('redis');
-const redisClient = redis.createClient();
 const express = require('express');
-
-// const viewEngine = require('ejs-locals');
-const viewEngine = require('express-handlebars');
-
-// const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const methodOverride = require('method-override');
-
-// JWT Authentication
-// const jwt = require('jsonwebtoken');
-
-
-// Express Session Authentication
-const session = require('express-session');
-const redisStore = require('connect-redis')(session);
-
 const logger = require('morgan');
 const path = require('path');
 const server = express();
 
+// Environment configuration
+// =========================
+server.set('env', config.serverEnv);
+config.serverDomain = config.protocol + '://' + config.serverDomain + ':' + (config.protocol === 'http' ? config.port : config.portSecure);
+
+// Cross-Site Resource Forgery
+// ===========================
 const csrf = require('csurf');
 const csrfProtection = csrf({cookie: true});
 
-// Enable request logging
+// Server logging
+// ==============
 server.use(logger('dev'));
 
-// Enables overriding of http verbs for supporting PUT/PATCH and DELETE requests from older clients
+const methodOverride = require('method-override');
 server.use(methodOverride('_method'));
 
-// server.use(bodyParser.json());
-// server.use(bodyParser.urlencoded({
-//     extended: true
-// }));
+// Parsing of cookies, application/x-www-form-urlencoded, and json data
+// ====================================================================
 server.use(express.json());
 server.use(express.urlencoded({extended: true}));
+const cookieParser = require('cookie-parser');
 server.use(cookieParser());
 
-// Set up express-session
+// Parsing of multipart/form-data for AJAX form submissions
+// ========================================================
+const multer = require('multer');
+const upload = multer();
+server.use(upload.array());
+
+const session = require('express-session');
+const redis = require('redis');
+const redisClient = redis.createClient();
+const redisStore = require('connect-redis')(session);
 server.use(session({
     key: 'user_sid',
     secret: '12345',
@@ -57,23 +54,26 @@ server.use(session({
     })
 }));
 
-// const passport = require('./models/user').passport;
-// server.use(passport.initialize());
-// server.use(passport.session());
-const User = require('./models/user');
-const auth = require('./lib/auth')(User);
 
 // Cross Site Resource Forgery Protection
 server.use(csrfProtection);
+server.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
 
 // Set up view engine and static asset paths
 server.set('views', path.join(__dirname, 'views'));
 
-// Use EJS
+// View Engine: EJS
+// ================
+// const viewEngine = require('ejs-locals');
 // server.engine('ejs', viewEngine);
 // server.set('view engine', 'ejs');
 
-// Use Handlebars
+// View Engine: Handlebars
+// =======================
+const viewEngine = require('express-handlebars');
 server.engine('hbs', viewEngine.create({
     extname: '.hbs',
     defaultLayout: 'default',
@@ -83,18 +83,29 @@ server.engine('hbs', viewEngine.create({
 server.set('view engine', 'hbs');
 
 // Configure path to static assets
-server.use(express.static(path.join(__dirname, 'public')));
+server.use(express.static(path.join(__dirname, 'client')));
 
+// User authentication
+// ===================
+const User = require('./models/user');
+const auth = require('./lib/auth')(User);
+
+// Initializing passport
+// =====================
 if (config.authMethod === 'passport-jwt' || config.authMethod === 'passport') {
     server.use(auth.passport.initialize());
     server.use(auth.passport.session());
 }
 
+// Non-terminating for an authenticated user
+// Use auth.require for a terminating check, e.g. to protect API access.
+// =====================================================================
 server.use(auth.sessionCheck);
 
 // WebSockets Configuration: Pass the status on to the application level to cascade down to the response level
 // ===========================================================================================================
 server.locals.websocketsEnabled = config.websocketsEnabled;
+server.locals.TwoFactorAuthRequired = config.TwoFactorAuthRequired;
 
 // Routers
 const root = require('./controllers/root');
@@ -104,5 +115,20 @@ const api = require('./api/v1/api');
 server.use('/', root);
 server.use('/users', users);
 server.use('/api/v1', api);
+
+// Rendering of error pages, e.g. 404
+// ==================================
+const createError = require('http-errors');
+
+server.use((req, res, next) => {
+    next(createError(404));
+});
+  
+server.use((err, req, res, next) => {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+    res.status(err.status || 500);
+    res.render('error');
+});
 
 module.exports = server;

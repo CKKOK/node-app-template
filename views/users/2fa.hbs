@@ -1,0 +1,24 @@
+<div class="container">
+    <form id="2fa" action="/users/2fa" method="post">
+        <table>
+            {{#if init}}
+                <tr class="form-group">
+                    <td><label for="key">2FA Secret: </label></td>
+                    <td>{{secret}}</td>
+                </tr>
+                <div class="form-group">
+                    <img src="{{imagelink}}" alt="2FA Secret">
+                </div>
+            {{/if}}
+            <tr class="form-group">
+                <td><label for="key">2FA Key: </label></td>
+                <td><input type="text" name="key" class="form-control"/></td>
+            </tr>
+        </table>
+        <div>
+            <input type="hidden" name="_csrf" value="{{csrfToken}}">
+            <input type="hidden" name="id" value="{{id}}">
+            <input id="btnSubmitLogin" type="submit" value="Submit" class="btn btn-primary" />
+        </div>
+    </form>
+</div>

@@ -2,6 +2,7 @@ const config = require('../config');
 const { mongoose, db, Schema } = require('../db');
 const bcrypt = require('bcrypt');
 const asyncf = require('../async');
+const TFA = require('../lib/2fa');
 
 const UserSchema = new Schema({
     name: {
@@ -19,10 +20,30 @@ const UserSchema = new Schema({
         type: String,
         required: [true, 'Password required']
     },
-    verified: {
+    isVerified: {
         type: Boolean,
         required: true,
         default: false
+    },
+    profile: {
+        type: String,
+        required: false,
+        default: ''
+    },
+    profilePic: {
+        type: String,
+        required: false,
+        default: ''
+    },
+    TFAEnabled: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
+    TFASecret: {
+        type: Schema.Types.Mixed,
+        required: false,
+        default: {}
     }
 });
 
@@ -65,8 +86,8 @@ module.exports = {
         return {user: createdUser, message: 'User created'};
     },
 
-    find: async function (name) {
-        let [err, result] = await asyncf(User.findOne({name: name}));
+    find: async function (searchOpt) {
+        let [err, result] = await asyncf(User.findOne(searchOpt));
         return {user: result, message: err};
     },
 
@@ -104,5 +125,22 @@ module.exports = {
         } else {
             return {user: null, message: 'Incorrect password'}
         }
-    }
+    },
+
+    verifyAccount: async function (userId, verificationString) {
+        let [err1, task] = await asyncf(Verify.findOne({userId: userId}));
+        if (task.verificationString === verificationString) {
+            let [err2, task] = await asyncf(Verify.findOneAndDelete({userId: userId}));
+            let [err3, user] = await asyncf(User.findOneAndUpdate({_id: userId}, {isVerified: true}));
+            return user;
+        } else {
+            return false;
+        };
+    },
+
+    setVerificationString: async function(userId, verificationString) {
+        let [err1, result] = await asyncf(Verify.findOneAndUpdate({userId: userId}, {verificationString: verificationString}, {upsert: true}));
+        return result;
+    },
+
 };
