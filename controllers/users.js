@@ -2,10 +2,11 @@ const config = require('../config');
 const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
-const auth = require('../lib/auth')(User);
+const auth = require('../lib/auth');
+const TFA = require('../models/2fa');
 const redirectTo = require('../lib/utils').redirectTo;
 const returnJSON = require('../lib/utils').returnJSON;
-const TFA = require('../models/2fa');
+
 
 // Example use of mailer
 // =====================
@@ -77,11 +78,25 @@ router.get('/2fa/reset', async (req, res) => {
 
 router.post('/', auth.register, auth.verification, redirectTo('/'));
 
-router.post('/login', auth.login, returnJSON({message: 'logged in'}));
+router.post('/login', auth.login, (req, res) => {
+    if (config.TwoFactorAuthRequired === true) {
+        res.redirect('/users/2fa');
+    } else {
+        res.redirect('/');
+    };
+});
 
 router.post('/2fa', async (req, res) => {
     let result = await TFA.verify(req.body.id, req.body.key);
-    res.send(result);
+    if (result === true) {
+        res.redirect('/');
+    } else {
+        res.redirect('/users/2fa');
+    };
+});
+
+router.post('/upload', (req, res, next) => {
+    res.send('Uploaded to ' + req.file.path);
 })
 
 module.exports = router;

@@ -1,7 +1,9 @@
 const webpack = require('webpack');
+const config = require('./config');
 
 module.exports = {
   target: 'web',
+  mode: config.serverEnv,
   entry: [
     'webpack-hot-middleware/client',
     './client-src/index.js'

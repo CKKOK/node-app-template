@@ -28,12 +28,6 @@ server.use(express.urlencoded({extended: true}));
 const cookieParser = require('cookie-parser');
 server.use(cookieParser());
 
-// Parsing of multipart/form-data for AJAX form submissions
-// ========================================================
-const multer = require('multer');
-const upload = multer();
-server.use(upload.array());
-
 if (config.authMethod === 'express-session' || config.authMethod === 'jwt-express-session') {
     const session = require('express-session');
     const redis = require('redis');
@@ -70,11 +64,11 @@ if (config.authMethod === 'express-session' || config.authMethod === 'jwt-expres
 
 
 // Cross Site Resource Forgery Protection
-server.use(csrfProtection);
-server.use((req, res, next) => {
-    res.locals.csrfToken = req.csrfToken();
-    next();
-})
+// server.use(csrfProtection);
+// server.use((req, res, next) => {
+//     res.locals.csrfToken = req.csrfToken();
+//     next();
+// })
 
 // Set up view engine and static asset paths
 server.set('views', path.join(__dirname, 'views'));
@@ -96,13 +90,27 @@ server.engine('hbs', viewEngine.create({
 }).engine);
 server.set('view engine', 'hbs');
 
+// Parsing of multipart/form-data for AJAX form submissions
+// ========================================================
+const multer = require('multer');
+const storage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, './uploads');
+    },
+    filename: (req, file, callback) => {
+        callback(null, file.originalname + '-' + Date.now())
+    }
+});
+const upload = multer({storage});
+server.use(upload.single('file'));
+server.use(upload.array());
+
 // Configure path to static assets
 server.use(express.static(path.join(__dirname, 'client')));
 
 // User authentication
 // ===================
-const User = require('./models/user');
-const auth = require('./lib/auth')(User);
+const auth = require('./lib/auth');
 
 // Initializing passport
 // =====================

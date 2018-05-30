@@ -35,7 +35,7 @@ module.exports = {
     userVerificationRequired: true,
 
     // Should users be required to authenticate via 2FA before accessing the service?
-    TwoFactorAuthRequired: false,
+    TwoFactorAuthRequired: true,
 
     // Authentication methods: Uncomment your chosen method
     // ====================================================

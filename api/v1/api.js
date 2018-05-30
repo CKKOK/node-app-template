@@ -1,8 +1,7 @@
 const config = require('../../config');
 const express = require('express');
 const router = express.Router();
-const User = require('../../models/user');
-const auth = require('../../lib/auth')(User);
+const auth = require('../../lib/auth');
 
 // Example use of Mailing Module
 // =====================
