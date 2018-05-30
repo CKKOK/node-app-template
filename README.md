@@ -35,7 +35,7 @@ Please direct any feedback to kok.chee.kean@outlook.com.
 - AJAX form handling for single-page application building
 - File uploads
 - CSRF protection middleware
-- Optional socket.io setup ready
+- Optional websockets readily setup for bi-directional server-client communication using socket.io. Turn this on in config.js.
 - Unopinionated optional Webpack/Babel setup as express middleware. This avoids the need to run two servers concurrently (one for the front-end and one for express) and leaves your choice of front-end framework open. To use React, simply install the necessary npm packages and edit 'client-src/index.js'.
 - Geolocation functions
 - A JS utility library currently providing linked list implementation for your use
