@@ -39,7 +39,13 @@ if (config.authMethod === 'express-session' || config.authMethod === 'jwt-expres
     const redis = require('redis');
     const redisClient = redis.createClient(6379, 'localhost'); 
     const redisStore = require('connect-redis')(session);
-
+    let redisErrorThrown = false;
+    redisClient.on('error', (err) => {
+        if (!redisErrorThrown){
+            console.log('Redis client error:\n===================\n', err);
+            redisErrorThrown = true;
+        }
+    });
     redisClient.get('test', (err, res) => {
         console.log('Redis server running')
     });
