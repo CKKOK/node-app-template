@@ -34,3 +34,6 @@ if (config.protocol === 'http') {
     });
     
 };
+
+console.log('User verification required:', config.userVerificationRequired);
+console.log('Two-factor authentication required:', config.TwoFactorAuthRequired);

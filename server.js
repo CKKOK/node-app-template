@@ -34,25 +34,33 @@ const multer = require('multer');
 const upload = multer();
 server.use(upload.array());
 
-const session = require('express-session');
-const redis = require('redis');
-const redisClient = redis.createClient();
-const redisStore = require('connect-redis')(session);
-server.use(session({
-    key: 'user_sid',
-    secret: '12345',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        expires: 600000
-    },
-    store: new redisStore({
-        host: 'localhost',
-        port: 6379,
-        client: redisClient,
-        ttl: 260
-    })
-}));
+if (config.authMethod === 'express-session' || config.authMethod === 'jwt-express-session') {
+    const session = require('express-session');
+    const redis = require('redis');
+    const redisClient = redis.createClient(6379, 'localhost'); 
+    const redisStore = require('connect-redis')(session);
+
+    redisClient.get('test', (err, res) => {
+        console.log('Redis server running')
+    });
+
+    server.use(session({
+        key: 'user_sid',
+        secret: '12345',
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+            expires: 600000
+        },
+        store: new redisStore({
+            host: 'localhost',
+            port: 6379,
+            client: redisClient,
+            ttl: 260
+        })
+    }));
+    console.log('Session running');
+}
 
 
 // Cross Site Resource Forgery Protection
@@ -106,6 +114,24 @@ server.use(auth.sessionCheck);
 // ===========================================================================================================
 server.locals.websocketsEnabled = config.websocketsEnabled;
 server.locals.TwoFactorAuthRequired = config.TwoFactorAuthRequired;
+
+// Setup webpack
+// =============
+if (config.webpackEnabled === true) {
+    console.log('Booting up webpack');
+    const webpack = require('webpack');
+    const webpackDevMiddleware = require('webpack-dev-middleware');
+    const webpackHotMiddleware = require('webpack-hot-middleware');
+    const webpackConfig = require('./webpack.config');
+    const compiler = webpack(webpackConfig);
+    server.use(webpackDevMiddleware(compiler, {
+        noInfo: true,
+        stats: {
+            colors: true
+        }
+    }));
+    server.use(webpackHotMiddleware(compiler));
+};
 
 // Routers
 const root = require('./controllers/root');

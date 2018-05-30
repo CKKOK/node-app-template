@@ -7,6 +7,9 @@ module.exports = {
     // serverEnv: 'test',
     // serverEnv: 'production',
 
+    // If webpack is enabled, ./client-src/index.js and its associated files will be compiled and served to the static assets as ./client/bundle.js. To be used for front-end frameworks.
+    webpackEnabled: true,
+
     // Protocol: 'http' or 'https'
     protocol: 'http',
     port: 3000,
@@ -21,7 +24,7 @@ module.exports = {
 
     // Uncomment the address of the database in use
     // ========================================
-    // db: 'postgres://kokcheekean@localhost:5432/authtest',
+    // db: 'postgres://username@localhost:5432/authtest',
     db: 'mongodb://localhost:27017/authtest',
 
     salt: 10,
@@ -45,7 +48,7 @@ module.exports = {
 
     // Nodemailer Configuration
     // ========================
-    mailFrom: 'CK Dev Studio <ckdevmnt@gmail.com>',
+    mailFrom: 'Some dev house <notarealemail@gmail.com>',
     mailHost: 'smtp.gmail.com',
     mailPort: 465,
     mailSecure: true,
