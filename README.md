@@ -4,10 +4,11 @@ A comprehensive, configurable NodeJS/ExpressJS/Webpack server with options for O
 
 To use, simply fork and clone the repo and edit config.js to your liking.
 Business logic is suggested to be implemented as modules in the ./lib folder.
+Please direct any feedback to kok.chee.kean@gmail.com.
 
 ## Protocol (select one)
 - http
-- https
+- https, with self-signed certs for use in development
 
 ## ORMs (configure one)
 - Mongoose
@@ -41,3 +42,4 @@ Business logic is suggested to be implemented as modules in the ./lib folder.
 
 ## Upcoming works
 - Online payment systems
+
