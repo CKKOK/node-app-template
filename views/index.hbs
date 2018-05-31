@@ -1,5 +1,18 @@
+{{#if FEFEnabled}}
+{{!-- For passing of variables from ExpressJS / Handlebars to ReactJS --}}
+<script>
+    var someMsg = "{{defaultMessage}}";
+</script>
+{{!-- For React --}}
 <div id="app"></div>
+{{/if}}
+
 <div class="container">
+    And this part is from handlebars.
     {{defaultMessage}}
 </div>
+
+{{#if webpackEnabled}}
+{{!-- For webpack --}}
 <script src="/bundle.js"></script>
+{{/if}}

@@ -39,6 +39,8 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "qrcode": "^1.2.0",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
     "redis": "^2.8.0",
     "redis-server": "^1.2.0",
     "sequelize": "^4.37.9",

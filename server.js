@@ -133,6 +133,8 @@ server.use(auth.sessionCheck);
 // ===========================================================================================================
 server.locals.websocketsEnabled = config.websocketsEnabled;
 server.locals.TwoFactorAuthRequired = config.TwoFactorAuthRequired;
+server.locals.webpackEnabled = config.webpackEnabled;
+server.locals.FEFEnabled = config.FEFEnabled;
 
 // Setup webpack
 // =============

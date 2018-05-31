@@ -10,10 +10,13 @@ module.exports = {
     // If webpack is enabled, ./client-src/index.js and its associated files will be compiled and served to the static assets as ./client/bundle.js. To be used for front-end frameworks.
     webpackEnabled: true,
 
+    // If FEF is enabled, the root app element is exposed on index.hbs as well as the script element that passes server and response local variables to the application. An example is currently provided assuming the use of React.
+    FEFEnabled: true,
+
     // Protocol: 'http' or 'https'
     protocol: 'http',
-    port: 3000,
-    portSecure: 5000,
+    port: 2501,
+    portSecure: 9000,
 
     // Enables / disables socket.io support
     websocketsEnabled: false,
