@@ -48,7 +48,7 @@ module.exports = {
 
     // Nodemailer Configuration
     // ========================
-    mailFrom: 'Some dev house <notarealemail@gmail.com>',
+    mailFrom: 'CK Dev Studio <ckdevmnt@gmail.com>',
     mailHost: 'smtp.gmail.com',
     mailPort: 465,
     mailSecure: true,

@@ -9,10 +9,7 @@ const server = express();
 server.set('env', config.serverEnv);
 config.serverDomain = config.protocol + '://' + config.serverDomain + ':' + (config.protocol === 'http' ? config.port : config.portSecure);
 
-// Cross-Site Resource Forgery
-// ===========================
-const csrf = require('csurf');
-const csrfProtection = csrf({cookie: true});
+
 
 // Server logging
 // ==============
@@ -30,8 +27,15 @@ server.use(cookieParser());
 
 if (config.authMethod === 'express-session' || config.authMethod === 'jwt-express-session') {
     const session = require('express-session');
+    const RedisServer = require('redis-server');
+    const redisServer = new RedisServer(6379);
+    redisServer.open((err) => {
+        if (err) {
+            console.log('Error opening redis server:', err);
+        };
+    });
     const redis = require('redis');
-    const redisClient = redis.createClient(6379, 'localhost'); 
+    const redisClient = redis.createClient(6379, 'localhost');
     const redisStore = require('connect-redis')(session);
     let redisErrorThrown = false;
     redisClient.on('error', (err) => {
@@ -43,7 +47,6 @@ if (config.authMethod === 'express-session' || config.authMethod === 'jwt-expres
     redisClient.get('test', (err, res) => {
         console.log('Redis server running')
     });
-
     server.use(session({
         key: 'user_sid',
         secret: '12345',
@@ -62,13 +65,15 @@ if (config.authMethod === 'express-session' || config.authMethod === 'jwt-expres
     console.log('Session running');
 }
 
-
-// Cross Site Resource Forgery Protection
-// server.use(csrfProtection);
-// server.use((req, res, next) => {
-//     res.locals.csrfToken = req.csrfToken();
-//     next();
-// })
+// Cross-Site Resource Forgery
+// ===========================
+const csrf = require('csurf');
+const csrfProtection = csrf({cookie: true});
+server.use(csrfProtection);
+server.use((req, res, next) => {
+    res.locals.csrfToken = req.csrfToken();
+    next();
+})
 
 // Set up view engine and static asset paths
 server.set('views', path.join(__dirname, 'views'));
