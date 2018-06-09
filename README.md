@@ -4,7 +4,6 @@ A comprehensive, configurable NodeJS/ExpressJS/Webpack server with options for O
 
 To use, simply fork and clone the repo and edit config.js to your liking.
 Business logic is suggested to be implemented as modules in the ./lib folder.
-Please direct any feedback to kok.chee.kean@outlook.com.
 
 ## Protocol (select one)
 - http
