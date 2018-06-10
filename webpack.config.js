@@ -11,14 +11,18 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.ts$/,
         exclude: /node_modules/,
-        use: ['babel-loader']
+        loader: 'awesome-typescript-loader'
+      },
+      {
+        test: /\.css$/,
+        loaders: 'style-loader!css-loader'
       }
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx']
+    extensions: ['*', '.ts', '.js']
   },
   output: {
     path: __dirname + '/client',
@@ -26,7 +30,8 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.optimize.UglifyJsPlugin()
   ],
   devServer: {
     contentBase: './client',
