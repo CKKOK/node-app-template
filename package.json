@@ -19,6 +19,7 @@
     "body-parser": "^1.18.3",
     "connect-redis": "^3.3.3",
     "cookie-parser": "^1.4.3",
+    "css-loader": "^0.28.11",
     "csurf": "^1.9.0",
     "ejs": "^2.6.1",
     "ejs-locals": "^1.0.2",
@@ -39,14 +40,17 @@
     "passport-local": "^1.0.0",
     "path": "^0.12.7",
     "qrcode": "^1.2.0",
-    "react": "^16.4.0",
-    "react-dom": "^16.4.0",
     "redis": "^2.8.0",
     "redis-server": "^1.2.0",
     "sequelize": "^4.37.9",
     "socket.io": "^2.1.1",
     "speakeasy": "^2.0.0",
-    "uuid-v4": "^0.1.0"
+    "uuid-v4": "^0.1.0",
+    "vue": "^2.5.16",
+    "vue-loader": "^15.2.4",
+    "vue-router": "^3.0.1",
+    "vue-style-loader": "^4.1.0",
+    "vue-template-compiler": "^2.5.16"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

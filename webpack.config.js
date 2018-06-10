@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const config = require('./config');
+const { VueLoaderPlugin } = require('vue-loader');
 
 module.exports = {
   target: 'web',
@@ -11,9 +12,8 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: ['babel-loader']
+        test: /\.vue$/,
+        use: 'vue-loader'
       }
     ]
   },
@@ -26,7 +26,8 @@ module.exports = {
     filename: 'bundle.js'
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new VueLoaderPlugin()
   ],
   devServer: {
     contentBase: './client',
