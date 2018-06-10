@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Carousel from './Components/Carousel/carousel';
 
 const styles = {
   root: {
@@ -17,8 +18,7 @@ class Root extends React.Component {
   render() {
     return(
       <div className="root" style={styles.root}>
-        This is a React Element. <br />
-        {someMsg}
+        <Carousel />
       </div>
     )
   }

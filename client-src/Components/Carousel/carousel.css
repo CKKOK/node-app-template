@@ -1,0 +1,33 @@
+.carousel-item {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    left: -50%;
+    background-color:rgba(128,0,0,0.1);
+}
+
+.carousel-prev, .carousel-next {
+    font-size: 1.5em;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    background-color: rgba(0,0,0,0.5);
+    color: white;
+    position: absolute;
+    top: 50%;
+}
+
+.carousel-prev {
+    left: 0px;
+}
+
+.carousel-next {
+    right: 0px;
+}
+
+.carousel {
+    position: relative;
+    height: 5em;
+    width: 100%;
+    background-color: rgb(163, 87, 1);
+}

@@ -19,6 +19,7 @@
     "body-parser": "^1.18.3",
     "connect-redis": "^3.3.3",
     "cookie-parser": "^1.4.3",
+    "css-loader": "^0.28.11",
     "csurf": "^1.9.0",
     "ejs": "^2.6.1",
     "ejs-locals": "^1.0.2",
@@ -46,6 +47,7 @@
     "sequelize": "^4.37.9",
     "socket.io": "^2.1.1",
     "speakeasy": "^2.0.0",
+    "style-loader": "^0.21.0",
     "uuid-v4": "^0.1.0"
   },
   "devDependencies": {
