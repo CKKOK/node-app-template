@@ -3,6 +3,7 @@
 A comprehensive, configurable NodeJS/ExpressJS/Webpack server with options for ORMs for SQL/NoSQL databases and various user authentication, verification, and 2FA options.
 
 To use, simply fork and clone the repo and edit config.js to your liking.
+If either React, Angular, or Vue is to be used, check out the relevant branch.
 Business logic is suggested to be implemented as modules in the ./lib folder.
 
 ## Protocol (select one)
